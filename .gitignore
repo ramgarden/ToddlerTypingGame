@@ -1,0 +1,16 @@
+# Build artifacts
+bin/
+obj/
+
+# User settings
+*.user
+*.suo
+
+# IDE
+.vs/
+.idea/
+*.csproj.user
+
+# OS
+.DS_Store
+Thumbs.db
