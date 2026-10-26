@@ -14,62 +14,23 @@ A safe, fullscreen typing game for toddlers and preschoolers (ages 2-5) with a h
 
 ## 🖼️ Screenshots
 
-> **Note:** These are descriptive placeholders. Run the game to see the actual visuals!
-
-### Start Screen
-```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│                         TODDLER                              │
-│                      TYPING GAME                            │
-│                                                             │
-│                      [pulsing]                              │
-│                   Press any key to start                    │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
+![Start screen](screenshots/01_start_screen.png)
 
 ### Letter Game — Correct Key Pressed
-```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│                           ● B ●                             │
-│                              (white on dark blue ellipse)   │
-│                                                             │
-│                    Letter 2 of 26                           │
-│                                                             │
-│    Bear   Banana   Balloon                                  │
-│                                                             │
-│              Adult: Ctrl+Shift+E to exit                    │
-└─────────────────────────────────────────────────────────────┘
-```
+
+![Letter game B](screenshots/02_letter_game_B.png)
 
 ### Letter Game — Wrong Key (Red Flash)
-```
-┌─────────────────────────────────────────────────────────────┐
-│                                                             │
-│                          ■ B ■                              │
-│                          (red on dark red ellipse)          │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
+
+![Letter game wrong](screenshots/03_letter_game_wrong.png)
 
 ### Free Typing Mode — Typewriter Paper
-```
-┌─────────────────────────────────────────────────────────────┐
-│                     TYPEWRITER MODE                         │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  █████████████████████████████████████████████████████████  │
-│  █  HELLO WORLD                                            █  │
-│  █  THIS IS MY STORY                                      █  │
-│  █  I LIKE CATS AND DOGS                                  █  │
-│  █  THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG _         █  │
-│  █████████████████████████████████████████████████████████  │
-│                                                             │
-│  Press F9 to return to Letter Game  |  Adult: Ctrl+Shift+E │
-└─────────────────────────────────────────────────────────────┘
-```
+
+![Typewriter mode](screenshots/04_typewriter_mode.png)
+
+### Adult Exit PIN Dialog
+
+![Adult exit dialog](screenshots/05_adult_exit_dialog.png)
 
 ## 🚀 Quick Start
 
