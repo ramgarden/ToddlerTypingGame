@@ -1,0 +1,14 @@
+C:\Users\ramga\Source\TodlerTypingGame\obj\Debug\net10.0-windows\ToddlerTypingGame.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\ramga\Source\TodlerTypingGame\obj\Debug\net10.0-windows\ToddlerTypingGame.AssemblyInfoInputs.cache
+C:\Users\ramga\Source\TodlerTypingGame\obj\Debug\net10.0-windows\ToddlerTypingGame.AssemblyInfo.cs
+C:\Users\ramga\Source\TodlerTypingGame\obj\Debug\net10.0-windows\ToddlerTypingGame.csproj.CoreCompileInputs.cache
+C:\Users\ramga\Source\TodlerTypingGame\bin\Debug\net10.0-windows\ToddlerTypingGame.exe
+C:\Users\ramga\Source\TodlerTypingGame\bin\Debug\net10.0-windows\ToddlerTypingGame.deps.json
+C:\Users\ramga\Source\TodlerTypingGame\bin\Debug\net10.0-windows\ToddlerTypingGame.runtimeconfig.json
+C:\Users\ramga\Source\TodlerTypingGame\bin\Debug\net10.0-windows\ToddlerTypingGame.dll
+C:\Users\ramga\Source\TodlerTypingGame\bin\Debug\net10.0-windows\ToddlerTypingGame.pdb
+C:\Users\ramga\Source\TodlerTypingGame\obj\Debug\net10.0-windows\ToddlerTypingGame.dll
+C:\Users\ramga\Source\TodlerTypingGame\obj\Debug\net10.0-windows\refint\ToddlerTypingGame.dll
+C:\Users\ramga\Source\TodlerTypingGame\obj\Debug\net10.0-windows\ToddlerTypingGame.pdb
+C:\Users\ramga\Source\TodlerTypingGame\obj\Debug\net10.0-windows\ToddlerTypingGame.genruntimeconfig.cache
+C:\Users\ramga\Source\TodlerTypingGame\obj\Debug\net10.0-windows\ref\ToddlerTypingGame.dll
