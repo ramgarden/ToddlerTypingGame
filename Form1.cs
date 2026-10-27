@@ -114,18 +114,6 @@ public partial class Form1 : Form
                 return (IntPtr)1;
             }
 
-            if (isCtrlDown && isShiftDown && vkCode == VK_E)
-            {
-                this.BeginInvoke((Action)ShowAdultExitDialog);
-                return (IntPtr)1;
-            }
-
-            if (isCtrlDown && isShiftDown && vkCode == VK_Q)
-            {
-                this.BeginInvoke((Action)ShowAdultExitDialog);
-                return (IntPtr)1;
-            }
-
             if (vkCode == VK_ESCAPE)
             {
                 HandleEscapePress();
@@ -148,6 +136,17 @@ public partial class Form1 : Form
                 this.Invalidate();
                 return (IntPtr)1;
             }
+
+            // Normal game key: route directly to Form1KeyDown via BeginInvoke and consume the event
+            if (this.IsHandleCreated && !this.IsDisposed)
+            {
+                this.BeginInvoke((Action)(() =>
+                {
+                    var keyArgs = new KeyEventArgs((Keys)vkCode);
+                    Form1_KeyDown(this, keyArgs);
+                }));
+                return (IntPtr)1;
+            }
         }
 
         return CallNextHookEx(_hookId, nCode, wParam, lParam);
@@ -161,7 +160,7 @@ public partial class Form1 : Form
             _escapePressCount++;
             if (_escapePressCount >= 3)
             {
-                this.BeginInvoke((Action)ShowAdultExitDialog);
+                this.BeginInvoke((Action)ShowExitDialog);
             }
         }
         else
@@ -293,13 +292,41 @@ public partial class Form1 : Form
         Application.Exit();
     }
 
-    private void ShowAdultExitDialog()
+    private void ShowExitDialog()
     {
-        using var dialog = new AdultExitDialog();
+        if (_hookId != IntPtr.Zero)
+        {
+            UnhookWindowsHookEx(_hookId);
+            _hookId = IntPtr.Zero;
+        }
+
+        using var dialog = new ExitDialog();
         var result = dialog.ShowDialog(this);
+
         if (result == DialogResult.OK)
         {
-            ExitGame();
+            if (dialog.SwitchMode)
+            {
+                _modeIsFreeTyping = !_modeIsFreeTyping;
+                if (_modeIsFreeTyping)
+                {
+                    _typingLog = "";
+                    _typingLineCount = 0;
+                }
+                else
+                {
+                    InitializeLetters();
+                    _currentLetterIndex = 0;
+                }
+            }
+            else
+            {
+                ExitGame();
+            }
+        }
+        else if (_hookId == IntPtr.Zero)
+        {
+            SetupKeyboardHook();
         }
     }
 
@@ -366,6 +393,7 @@ public partial class Form1 : Form
 
         using var letterFont = new Font("Segoe UI", 300, FontStyle.Bold);
         using var infoFont = new Font("Segoe UI", 28, FontStyle.Regular);
+        using var hintFont = new Font("Segoe UI", 14, FontStyle.Regular);
         using var brush = new SolidBrush(Color.White);
 
         string letterStr = currentLetter.ToString();
@@ -398,26 +426,61 @@ public partial class Form1 : Form
             centerX - displaySize.Width / 2,
             centerY - displaySize.Height / 2);
 
+        // Dynamically position text below the letter so nothing overlaps or clips.
+        // Compute positions from the bottom up: hint is pinned to bottom margin,
+        // examples sit above hint, progress sits above examples.
+        float infoFontHeight = infoFont.GetHeight(g);
+        float hintFontHeight = hintFont.GetHeight(g);
+
+        // Hint: pinned to bottom of screen with margin (using its own smaller font)
+        float hintY = this.ClientSize.Height - hintFontHeight - 60;
+
+        // Examples: above hint, with gap
+        float examplesY = hintY - infoFontHeight - 20;
+
+        // Progress: above examples, with gap
+        float progressY = examplesY - infoFontHeight - 15;
+
+        // Ensure progress stays below the letter; if not, shift everything down
+        float letterBottom = centerY + displaySize.Height / 2;
+        float overflow = (letterBottom + 50) - progressY;
+        if (overflow > 0)
+        {
+            progressY += overflow;
+            examplesY += overflow;
+            hintY += overflow;
+        }
+
+        // Safety: clamp hint so it never goes off the bottom edge of the screen
+        float maxHintY = this.ClientSize.Height - hintFontHeight - 30;
+        if (hintY > maxHintY)
+        {
+            float clampOver = hintY - maxHintY;
+            hintY -= clampOver;
+            examplesY -= clampOver;
+            progressY -= clampOver;
+        }
+
         string progress = $"Letter {_currentLetterIndex + 1} of {_letters.Count}";
         var progressSize = g.MeasureString(progress, infoFont);
         g.DrawString(progress, infoFont, brush,
             centerX - progressSize.Width / 2,
-            centerY + displaySize.Height / 2 + 60);
+            progressY);
 
-        string hint = "Adult: Ctrl+Shift+E to exit";
-        var hintSize = g.MeasureString(hint, infoFont);
-        g.DrawString(hint, infoFont, brush,
+        string hint = "Press Esc x3 to exit";
+        var hintSize = g.MeasureString(hint, hintFont);
+        g.DrawString(hint, hintFont, brush,
             centerX - (int)(hintSize.Width / 2),
-            this.ClientSize.Height - (int)hintSize.Height - 40);
+            hintY);
 
-        DrawLetterExamples(g, currentLetter, centerX, centerY + (int)(displaySize.Height / 2) + 120);
+        DrawLetterExamples(g, currentLetter, centerX, (int)examplesY);
     }
 
     private void DrawFreeTypingScreen(Graphics g, int centerX, int centerY)
     {
         using var paperFont = new Font("Consolas", 32, FontStyle.Regular);
         using var titleFont = new Font("Segoe UI", 24, FontStyle.Bold);
-        using var hintFont = new Font("Segoe UI", 18, FontStyle.Regular);
+        using var hintFont = new Font("Segoe UI", 14, FontStyle.Regular);
         using var brush = new SolidBrush(Color.FromArgb(40, 30, 20));
         using var titleBrush = new SolidBrush(Color.FromArgb(80, 60, 40));
         using var textBrush = new SolidBrush(Color.FromArgb(20, 15, 10));
@@ -450,7 +513,7 @@ public partial class Form1 : Form
             centerX - titleSize.Width / 2,
             40);
 
-        string hint = "Press F9 to return to Letter Game  |  Adult: Ctrl+Shift+E to exit";
+        string hint = "Press F9 to return to Letter Game  |  Esc 3x to exit";
         var hintSize = g.MeasureString(hint, hintFont);
         g.DrawString(hint, hintFont, hintBrush,
             centerX - hintSize.Width / 2,
@@ -537,16 +600,20 @@ public partial class Form1 : Form
     }
 }
 
-public class AdultExitDialog : Form
+public class ExitDialog : Form
 {
     private readonly TextBox _pinBox;
     private readonly Label _messageLabel;
-    private readonly Button _okButton;
+    private readonly Button _exitButton;
+    private readonly Button _switchButton;
     private readonly Button _cancelButton;
 
     private const string DefaultPin = "1234";
 
-    public AdultExitDialog()
+    // Public so Form1 can check if user wants to switch mode after PIN
+    public bool SwitchMode { get; private set; }
+
+    public ExitDialog()
     {
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.StartPosition = FormStartPosition.CenterScreen;
@@ -561,7 +628,7 @@ public class AdultExitDialog : Form
 
         var titleLabel = new Label
         {
-            Text = "ADULT EXIT",
+            Text = "EXIT",
             Font = new Font("Segoe UI", 24, FontStyle.Bold),
             ForeColor = Color.White,
             AutoSize = true,
@@ -588,7 +655,7 @@ public class AdultExitDialog : Form
         };
         _pinBox.KeyDown += PinBox_KeyDown;
 
-        _okButton = new Button
+        _exitButton = new Button
         {
             Text = "Exit",
             Font = new Font("Segoe UI", 14),
@@ -599,14 +666,27 @@ public class AdultExitDialog : Form
             ForeColor = Color.White,
             FlatStyle = FlatStyle.Flat
         };
-        _okButton.Click += OkButton_Click;
+        _exitButton.Click += ExitButton_Click;
+
+        _switchButton = new Button
+        {
+            Text = "Switch Mode",
+            Font = new Font("Segoe UI", 14),
+            Size = new Size(100, 40),
+            Location = new Point(210, 180),
+            DialogResult = DialogResult.OK,
+            BackColor = Color.FromArgb(60, 120, 60),
+            ForeColor = Color.White,
+            FlatStyle = FlatStyle.Flat
+        };
+        _switchButton.Click += SwitchButton_Click;
 
         _cancelButton = new Button
         {
             Text = "Cancel",
             Font = new Font("Segoe UI", 14),
             Size = new Size(100, 40),
-            Location = new Point(210, 180),
+            Location = new Point(90, 230),
             DialogResult = DialogResult.Cancel,
             BackColor = Color.FromArgb(60, 60, 80),
             ForeColor = Color.White,
@@ -616,13 +696,26 @@ public class AdultExitDialog : Form
         this.Controls.Add(titleLabel);
         this.Controls.Add(_messageLabel);
         this.Controls.Add(_pinBox);
-        this.Controls.Add(_okButton);
+        this.Controls.Add(_exitButton);
+        this.Controls.Add(_switchButton);
         this.Controls.Add(_cancelButton);
 
-        this.AcceptButton = _okButton;
+        this.AcceptButton = _exitButton;
         this.CancelButton = _cancelButton;
 
         this.Shown += (s, e) => _pinBox.Focus();
+    }
+
+    private void ExitButton_Click(object? sender, EventArgs e)
+    {
+        SwitchMode = false;
+        CheckPinAndClose();
+    }
+
+    private void SwitchButton_Click(object? sender, EventArgs e)
+    {
+        SwitchMode = true;
+        CheckPinAndClose();
     }
 
     private void PinBox_KeyDown(object? sender, KeyEventArgs e)
@@ -633,11 +726,6 @@ public class AdultExitDialog : Form
             e.SuppressKeyPress = true;
             CheckPinAndClose();
         }
-    }
-
-    private void OkButton_Click(object? sender, EventArgs e)
-    {
-        CheckPinAndClose();
     }
 
     private void CheckPinAndClose()

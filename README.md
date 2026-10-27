@@ -10,7 +10,7 @@ A safe, fullscreen typing game for toddlers and preschoolers (ages 2-5) with a h
 | **Free Typing (Typewriter)** | Press **F9** to toggle. Kids can type anything — letters, numbers, symbols, Enter for new lines, Backspace to erase. Realistic typewriter paper UI with scrolling, blinking cursor, and typewriter *click* and *ding* sounds. |
 | **Kiosk Lock-Down** | Fullscreen borderless window. Blocks Win key, Alt+Tab, Alt+F4, Escape (gated). |
 | **Auto-Start with Windows** | On first run, asks "Start automatically with Windows?" Saves preference to Registry Run key. |
-| **Adult Exit (PIN-Protected)** | **Ctrl+Shift+E** (or Ctrl+Shift+Q, or Escape×3) opens a PIN dialog. Default PIN: `1234` (not shown in dialog so kids can't see it). Cancel button keeps you in the game. |
+| **Exit (PIN-Protected)** | **Escape ×3** (within 1 second) opens a PIN dialog. Default PIN: `1234` (not shown in dialog so kids can't see it). Cancel button keeps you in the game. |
 
 ## 🖼️ Screenshots
 
@@ -28,9 +28,9 @@ A safe, fullscreen typing game for toddlers and preschoolers (ages 2-5) with a h
 
 ![Typewriter mode](screenshots/04_typewriter_mode.png)
 
-### Adult Exit PIN Dialog
+### Exit PIN Dialog
 
-![Adult exit dialog](screenshots/05_adult_exit_dialog.png)
+![Exit dialog](screenshots/05_adult_exit_dialog.png)
 
 ## 🚀 Quick Start
 
@@ -64,14 +64,14 @@ dotnet publish -c Release -r win-x86 --self-contained true
 | Type freely (in Typewriter mode) | Any printable key |
 | New line (Typewriter) | **Enter** |
 | Delete (Typewriter) | **Backspace** |
-| Exit to adult menu | **Ctrl+Shift+E** (or Ctrl+Shift+Q, or Escape×3) |
+| Exit to PIN dialog | **Escape ×3** (within 1 second) |
 | Enter PIN in dialog | Type `1234` + Enter |
 | Cancel exit dialog | Click "Cancel" or press Esc |
 
 ## 🔧 Configuration
 
-### Change Adult PIN
-The PIN is hardcoded as `1234` in `Form1.cs` (`AdultExitDialog.DefaultPin`). To change it, edit and rebuild:
+### Change PIN
+The PIN is hardcoded as `1234` in `Form1.cs` (`ExitDialog.DefaultPin`). To change it, edit and rebuild:
 ```csharp
 private const string DefaultPin = "YOUR_NEW_PIN";
 ```

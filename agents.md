@@ -39,8 +39,7 @@ dotnet publish -c Release -r win-x86 --self-contained true -o ./publish
 - Blocks via keyboard hook (WH_KEYBOARD_LL):
   - Win key: `VK_LWIN` (0x5B) / `VK_RWIN` (0x5C) -> eat
   - Alt+Tab / Alt+F4 -> eat when Alt held
-  - Ctrl+Shift+E / Ctrl+Shift+Q -> opens adult exit dialog
-  - Escape -> 3 rapid presses -> adult exit dialog
+- Escape -> 3 rapid presses -> exit dialog
 
 ### 2. Toddler Typing Game (Letter Mode)
 - `_modeIsFreeTyping` flag controls mode (default false = Letter Game)
@@ -78,16 +77,15 @@ dotnet publish -c Release -r win-x86 --self-contained true -o ./publish
   `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` -> SetValue("ToddlerTypingGame", Application.ExecutablePath)
   else -> DeleteValue("ToddlerTypingGame", false)
 
-### 6. Adult Exit (PIN Dialog)
-- Ctrl+Shift+E / Ctrl+Shift+Q -> `BeginInvoke(ShowAdultExitDialog)`
-- Escape x3 -> `BeginInvoke(ShowAdultExitDialog)`
-- `AdultExitDialog` (Form):
+### 6. Exit (PIN Dialog)
+- Escape x3 -> `BeginInvoke(ShowExitDialog)`
+- `ExitDialog` (Form):
   - FixedDialog, CenterScreen, TopMost, BorderStyle.FixedDialog, MaximizeBox/MinimizeBox=false, ShowInTaskbar=false, ControlBox=false
   - BackColor Black, ForeColor White
   - Size 400x250
-  - Labels: "ADULT EXIT" (24pt bold), "Enter PIN to exit:" (14pt)
+  - Labels: "EXIT" (24pt bold), "Enter PIN to exit:" (14pt)
   - TextBox `_pinBox`: Font SegoeUI 24, PasswordChar='●', MaxLength=4, Centered, KeyDown -> Enter -> CheckPinAndClose
-  - Buttons: "Exit" (red, DialogResult.OK, Flat), "Cancel" (dark, DialogResult.Cancel, Flat)
+  - Buttons: "Exit" (red, DialogResult.OK, Flat), "Switch Mode" (green, DialogResult.OK, Flat), "Cancel" (dark, DialogResult.Cancel, Flat)
   - AcceptButton=Exit, CancelButton=Cancel, Shown -> _pinBox.Focus
   - CheckPinAndClose: if `_pinBox.Text == DefaultPin ("1234")` -> DialogResult=OK, Close; else -> "Incorrect PIN. Try again.", Red text, clear+refocus
 
@@ -102,11 +100,11 @@ dotnet publish -c Release -r win-x86 --self-contained true -o ./publish
 - Keyboard hook: Form1.cs `KeyboardHookCallback` (line ~95), P/Invokes ~34-49
 - Letter game: Form1.cs `DrawLetterGameScreen` (line ~363)
 - Free typing: Form1.cs `DrawFreeTypingScreen`, `HandleFreeTypingKey` (line ~240)
-- Adult exit: Form1.cs `ShowAdultExitDialog`, `AdultExitDialog` class (line ~379)
+- Exit: Form1.cs `ShowExitDialog`, `ExitDialog` class (line ~596)
 - Program: Program.cs `Main` -> CheckFirstRun / ShowAutoStartPrompt / ApplyAutoStartSetting / AddToWindowsRegistryRun / RemoveFromWindowsRegistryRun / LoadSettings / SaveSettings / Settings class
 
-## Exit Strategy / Adult Knowledge
-- Adult exit trigger: **Ctrl+Shift+E** (or Ctrl+Shift+Q) OR **Escape x3 within 1s**
+## Exit Strategy / Knowledge
+- Exit trigger: **Escape x3 within 1s**
 - These all route to adult exit dialog requiring PIN (default **1234**)
 - PIN NOT displayed in dialog (to avoid kid seeing it); adults know from docs/default config
 - Cancel button dismisses dialog (stays in game)
@@ -120,7 +118,7 @@ dotnet publish -c Release -r win-x86 --self-contained true -o ./publish
 - [ ] Kiosk: Win key blocked, Alt+Tab/F4 blocked, Escape gated
 - [ ] Letter mode: correct advances, wrong flashes red + sound, cycles A-Z
 - [ ] Free typing: F9 toggles, typing appends to log, Enter newline, scroll to 12 lines, cursor blinks
-- [ ] Adult exit: Ctrl+Shift+E -> PIN dialog -> OK exits; Cancel stays
+- [ ] Exit: Escape x3 -> PIN dialog -> Exit or Switch Mode; Cancel stays
 
 ## Distribution Notes
 - Published exe self-contained (includes .NET runtime)
