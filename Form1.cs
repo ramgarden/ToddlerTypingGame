@@ -117,7 +117,8 @@ public partial class Form1 : Form
             if (vkCode == VK_ESCAPE)
             {
                 HandleEscapePress();
-                return (IntPtr)1;
+                // Don't consume ESC here - let it reach Form1_KeyDown so typewriter mode can process it
+                // return (IntPtr)1;
             }
 
             if (vkCode == 0x78) // F9 key
