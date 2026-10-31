@@ -318,6 +318,7 @@ public partial class Form1 : Form
                     InitializeLetters();
                     _currentLetterIndex = 0;
                 }
+                this.Invalidate();
             }
             else
             {
