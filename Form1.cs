@@ -622,7 +622,7 @@ public class ExitDialog : Form
         this.TopMost = true;
         this.BackColor = Color.Black;
         this.ForeColor = Color.White;
-        this.Size = new Size(400, 250);
+        this.Size = new Size(520, 250);
         this.MaximizeBox = false;
         this.MinimizeBox = false;
         this.ShowInTaskbar = false;
@@ -688,7 +688,7 @@ public class ExitDialog : Form
             Text = "Cancel",
             Font = new Font("Segoe UI", 14),
             Size = new Size(100, 40),
-            Location = new Point(90, 230),
+            Location = new Point(330, 180),
             DialogResult = DialogResult.Cancel,
             BackColor = Color.FromArgb(60, 60, 80),
             ForeColor = Color.White,
